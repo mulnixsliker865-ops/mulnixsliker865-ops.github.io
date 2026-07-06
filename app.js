@@ -137,7 +137,9 @@ function setStatus(type, message) {
 }
 
 function updateKpis() {
-  setText("#updatedAt", data.updatedAt || "未知");
+  const lastAttempt = data.refresh?.lastAttemptAt;
+  const failed = data.refresh?.ok === false;
+  setText("#updatedAt", failed && lastAttempt ? `${data.updatedAt || "未知"}（最近刷新失败：${lastAttempt}）` : data.updatedAt || "未知");
   setText("#dataScope", data.scope || "数据口径");
   setText("#todaySpend", `¥${money(data.totals.todaySpend || 0)}`);
   setText("#balance", `¥${money(data.totals.balance || 0)}`);
@@ -325,6 +327,26 @@ function buildAlerts() {
     );
   }
 
+  if (data.refresh?.ok === false) {
+    addAlert(
+      alerts,
+      "bad",
+      "自动刷新失败，当前不是最新数据",
+      `最近尝试：${data.refresh.lastAttemptAt || "未知"}。原因：${data.refresh.error || "百度页面未放行"}。当前仍展示 ${data.updatedAt || "上次成功"} 的数据。`,
+      "https://github.com/mulnixsliker865-ops/mulnixsliker865-ops.github.io/actions/workflows/refresh-baidu-data.yml",
+      "看刷新日志"
+    );
+  } else if (isDataStale(data.updatedAt)) {
+    addAlert(
+      alerts,
+      "warn",
+      "数据时间可能过期",
+      `当前最后成功读取时间是 ${data.updatedAt || "未知"}，建议核对 GitHub Actions 或回百度平台确认。`,
+      "https://github.com/mulnixsliker865-ops/mulnixsliker865-ops.github.io/actions/workflows/refresh-baidu-data.yml",
+      "看刷新日志"
+    );
+  }
+
   if (balanceDays !== null && balanceDays < 3) {
     addAlert(
       alerts,
@@ -407,6 +429,14 @@ function buildAlerts() {
     addAlert(alerts, "ok", "当前没有明显异常", "账户消费、CPC、转化成本和追踪词暂未触发风险规则。", links.home, "回平台");
   }
   return alerts.slice(0, 8);
+}
+
+function isDataStale(updatedAt) {
+  if (!updatedAt) return true;
+  const normalized = String(updatedAt).replace(/\//g, "-").replace(" ", "T");
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) return false;
+  return Date.now() - date.getTime() > 24 * 60 * 60 * 1000;
 }
 
 function renderAlerts() {
@@ -635,6 +665,7 @@ function normalizeLiveData(live) {
 
 function renderAll() {
   updateKpis();
+  renderRefreshHealth();
   renderAccounts();
   renderFunnel();
   renderChecklist();
@@ -644,6 +675,21 @@ function renderAll() {
   renderAlerts();
   renderRuleOutput();
   drawCharts();
+}
+
+function renderRefreshHealth() {
+  if (data.refresh?.ok === false) {
+    setStatus(
+      "error",
+      `自动刷新失败：${data.refresh.error || "百度页面未放行"}。当前展示的是 ${data.updatedAt || "上次成功"} 的数据，最近尝试：${data.refresh.lastAttemptAt || "未知"}。`
+    );
+    return;
+  }
+  if (isDataStale(data.updatedAt)) {
+    setStatus("error", `数据可能过期：最后成功读取时间是 ${data.updatedAt || "未知"}，请看 GitHub Actions 刷新日志。`);
+    return;
+  }
+  setStatus("success", `已读取最新 live-data.json，最后成功更新时间：${data.updatedAt || "未知"}。`);
 }
 
 async function loadLiveData() {
