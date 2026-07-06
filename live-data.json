@@ -216,5 +216,11 @@
       ]
     }
   },
-  "trackerStatus": "等待刷新器读取百度搜索词报表。"
+  "trackerStatus": "等待刷新器读取百度搜索词报表。",
+  "refresh": {
+    "ok": false,
+    "lastAttemptAt": "2026-07-06 14:56",
+    "error": "百度登录触发验证码/短信验证，云端刷新器不能绕过，请人工验证或改用固定云服务器登录态。",
+    "source": "github_actions"
+  }
 }
