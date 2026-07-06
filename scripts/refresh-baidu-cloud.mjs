@@ -106,6 +106,7 @@ async function maybeLogin(page) {
   const passwordSelector = '#TANGRAM__PSP_3__password, input[name="password"], input[type="password"]';
   const buttonSelector = '#TANGRAM__PSP_3__submit, input[type="submit"], button[type="submit"], .pass-button-submit';
 
+  await openPasswordLogin(page);
   await (await firstVisible(page, userSelector, "百度账号输入框")).fill(username, { timeout: 10000 });
   await (await firstVisible(page, passwordSelector, "百度密码输入框")).fill(password, { timeout: 10000 });
   if (await page.locator('input[name*="verify"], input[id*="verify"], input[name*="code"], input[id*="code"]').count()) {
@@ -116,6 +117,28 @@ async function maybeLogin(page) {
     page.locator(buttonSelector).first().click({ timeout: 10000 }),
   ]);
   await page.waitForTimeout(8000);
+}
+
+async function openPasswordLogin(page) {
+  const switchSelectors = [
+    "#TANGRAM__PSP_3__footerULoginBtn",
+    ".tang-pass-footerBarULogin",
+    "text=用户名登录",
+    "text=账号登录",
+    "text=帐号登录",
+    "text=密码登录",
+  ];
+  for (const selector of switchSelectors) {
+    const locator = page.locator(selector);
+    const count = await locator.count().catch(() => 0);
+    for (let index = 0; index < count; index += 1) {
+      const item = locator.nth(index);
+      if (!(await item.isVisible().catch(() => false))) continue;
+      await item.click({ timeout: 5000 }).catch(() => {});
+      await page.waitForTimeout(1500);
+      return;
+    }
+  }
 }
 
 async function firstVisible(page, selector, label) {
