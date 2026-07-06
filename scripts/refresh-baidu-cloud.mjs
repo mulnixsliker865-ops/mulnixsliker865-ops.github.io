@@ -106,8 +106,8 @@ async function maybeLogin(page) {
   const passwordSelector = '#TANGRAM__PSP_3__password, input[name="password"], input[type="password"]';
   const buttonSelector = '#TANGRAM__PSP_3__submit, input[type="submit"], button[type="submit"], .pass-button-submit';
 
-  await page.locator(userSelector).first().fill(username, { timeout: 10000 });
-  await page.locator(passwordSelector).first().fill(password, { timeout: 10000 });
+  await (await firstVisible(page, userSelector, "百度账号输入框")).fill(username, { timeout: 10000 });
+  await (await firstVisible(page, passwordSelector, "百度密码输入框")).fill(password, { timeout: 10000 });
   if (await page.locator('input[name*="verify"], input[id*="verify"], input[name*="code"], input[id*="code"]').count()) {
     throw new Error("百度登录触发验证码/短信验证，云端刷新器不能绕过，请人工验证或改用固定云服务器登录态。");
   }
@@ -116,6 +116,16 @@ async function maybeLogin(page) {
     page.locator(buttonSelector).first().click({ timeout: 10000 }),
   ]);
   await page.waitForTimeout(8000);
+}
+
+async function firstVisible(page, selector, label) {
+  const locator = page.locator(selector);
+  const count = await locator.count();
+  for (let index = 0; index < count; index += 1) {
+    const item = locator.nth(index);
+    if (await item.isVisible().catch(() => false)) return item;
+  }
+  throw new Error(`找不到可见的${label}。`);
 }
 
 async function readPageText(page, target) {
