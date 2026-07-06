@@ -344,10 +344,28 @@ async function main() {
         deepConversions: 0,
         crmValidLeads: null,
       },
+      refresh: {
+        ok: true,
+        lastAttemptAt: nowText(),
+        error: "",
+        source: "github_actions",
+      },
     };
 
     await writeFile(liveDataPath, `${JSON.stringify(liveData, null, 2)}\n`, "utf8");
     console.log(`live-data.json 已更新：${liveData.updatedAt}`);
+  } catch (error) {
+    const failedData = {
+      ...previousLiveData,
+      refresh: {
+        ok: false,
+        lastAttemptAt: nowText(),
+        error: String(error?.message || error),
+        source: "github_actions",
+      },
+    };
+    await writeFile(liveDataPath, `${JSON.stringify(failedData, null, 2)}\n`, "utf8");
+    console.warn(`live-data.json 保留上次成功数据，本次刷新失败：${failedData.refresh.error}`);
   } finally {
     await browser.close();
   }
