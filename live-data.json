@@ -1,6 +1,6 @@
 {
   "source": "baidu_cloud_refresh_github_actions",
-  "updatedAt": "2026-07-16 18:28",
+  "updatedAt": "2026-07-16 22:34",
   "scope": "GitHub Actions 云端刷新",
   "totals": {
     "todaySpend": 0,
@@ -218,9 +218,9 @@
     "crmValidLeads": null
   },
   "refresh": {
-    "ok": false,
-    "lastAttemptAt": "2026-07-16 20:04",
-    "error": "百度登录触发验证码/短信验证，云端刷新器不能绕过，请人工验证或改用固定云服务器登录态。",
+    "ok": true,
+    "lastAttemptAt": "2026-07-16 22:34",
+    "error": "",
     "source": "github_actions"
   }
 }
