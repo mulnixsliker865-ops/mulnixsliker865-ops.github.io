@@ -219,7 +219,7 @@
   },
   "refresh": {
     "ok": false,
-    "lastAttemptAt": "2026-07-16 10:45",
+    "lastAttemptAt": "2026-07-16 13:43",
     "error": "百度登录触发验证码/短信验证，云端刷新器不能绕过，请人工验证或改用固定云服务器登录态。",
     "source": "github_actions"
   }
