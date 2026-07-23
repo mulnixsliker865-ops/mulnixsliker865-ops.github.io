@@ -219,8 +219,8 @@
   },
   "refresh": {
     "ok": false,
-    "lastAttemptAt": "2026-07-23 13:57",
-    "error": "百度登录触发验证码/短信验证，云端刷新器不能绕过，请人工验证或改用固定云服务器登录态。",
+    "lastAttemptAt": "2026-07-23 16:41",
+    "error": "page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://passport.baidu.com/v2/?login\", waiting until \"domcontentloaded\"\n",
     "source": "github_actions"
   }
 }
