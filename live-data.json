@@ -1,6 +1,6 @@
 {
   "source": "baidu_cloud_refresh_github_actions",
-  "updatedAt": "2026-08-01 16:41",
+  "updatedAt": "2026-08-01 18:43",
   "scope": "GitHub Actions 云端刷新",
   "totals": {
     "todaySpend": 0,
@@ -219,7 +219,7 @@
   },
   "refresh": {
     "ok": true,
-    "lastAttemptAt": "2026-08-01 16:41",
+    "lastAttemptAt": "2026-08-01 18:43",
     "error": "",
     "source": "github_actions"
   }
